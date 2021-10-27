@@ -126,7 +126,7 @@ class ManyToMany(Select):
 
     async def get_options(self):
         ret = await self.get_queryset()
-        options = [dict(label=str(x), value=x.pk) for x in ret]
+        options = [dict(label=str(x), value=str(x.pk)) for x in ret]
         return options
 
     async def get_queryset(self):
