@@ -84,6 +84,7 @@ class Model(Resource):
     page_pre_title: Optional[str] = None
     page_title: Optional[str] = None
     filters: List[Union[str, Filter]] = []
+    select_related: Optional[List[Field]] = []
 
     async def get_toolbar_actions(self, request: Request) -> List[ToolbarAction]:
         return [
@@ -240,8 +241,15 @@ class Model(Resource):
                 placeholder=placeholder, null=null, default=field.default
             )
         elif isinstance(field, ForeignKeyFieldInstance):
+            select_related = []
+            for select_field in cls.select_related:
+                split_field = select_field.split('__')
+                join_field = '__'.join(split_field[1:])
+                if split_field[0] == field_name and join_field:
+                    select_related.append(join_field)
             display, input_ = displays.Display(), inputs.ForeignKey(
-                field.related_model, null=null, default=field.default
+                field.related_model, null=null, default=field.default, 
+                select_related=select_related
             )
             field_name = field.source_field
         elif isinstance(field, ManyToManyFieldInstance):

@@ -97,9 +97,11 @@ class ForeignKey(Select):
         null: bool = False,
         disabled: bool = False,
         help_text: Optional[str] = None,
+        select_related: Optional[List] = []
     ):
         super().__init__(help_text=help_text, default=default, null=null, disabled=disabled)
         self.model = model
+        self.select_related = select_related
 
     async def get_options(self):
         ret = await self.get_queryset()
@@ -109,6 +111,8 @@ class ForeignKey(Select):
         return options
 
     async def get_queryset(self):
+        if self.select_related:
+            return await self.model.all().select_related(*self.select_related)
         return await self.model.all()
 
 
