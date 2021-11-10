@@ -163,10 +163,10 @@ class Model(Resource):
             if isinstance(input_, inputs.ManyToMany):
                 v = data.getlist(name)
                 value = await input_.parse_value(request, v)
-                m2m_ret[name] = await input_.model.filter(pk__in=value)
+                m2m_ret[name] = await input_.model.filter(pk__in=value) or None
             else:
                 v = data.get(name)
-                value = await input_.parse_value(request, v)
+                value = await input_.parse_value(request, v) or None
                 if value is None:
                     continue
                 ret[name] = value
